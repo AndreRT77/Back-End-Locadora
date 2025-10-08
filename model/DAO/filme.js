@@ -9,6 +9,11 @@
         Bancos de Dados relacionais
             Sequelize -> Foi utilizado em muitos projetos desde o inicio do node
             Prisma    -> É uma dependencia atual que trabalha com BD (MYSQL, PostgreSQL, SQL Server) (SQL ou ORM)
+                npm install prisma ---save              -> instalar prisma (Conexão com o database) 
+                npm install @prisma/client --save       -> instalar o cliente do prisma (Executar scripts SQL no banco)
+                npx prisma init                         -> promt de comando para inicializar o prisma
+                npx prisma migrate dev                  -> Realiza o sincronismo entre o prisma e o BD (CUIDADO, nesse processo você poderá perder dados reais do BD, pois ele pega e cria as tabelas programadas no ORM schema.prisma)
+                npx prisma generate                     -> Apenas realiza o sncronismo entre o prisma e o BD, geralmente usamos para rodar o projeto em um PC novo 
             Knex      -> É uma dependencia atual que trabalha com MYSQl
         Banco de Dados não Relacional
             Mongoose  -> É uma dependencia para o Mongo DB (Não Relacional)
@@ -18,13 +23,13 @@
     // $queryRaw *() -> permite executar um script SQl Sem estar em uma variável e que retorna valores do banco (SELECT) e faz tratametos de segurança contra SQL Injection
 */
 //Import da dependencua do Prisma que permite a execução de script sql no banco de dados
-const {PrismaClient} = require('@prisma/client')
+const {PrismaClient} = require('../../generated/prisma')
 
 //Cria uma novo objeto baseado na classe do PrismaClient
 const prisma = new PrismaClient()
 
 //Retorna uma lista de todos os filmes do banco de dados
-const getSelectAllMovies = async function(){
+const getSelectAllMovies = async() =>{
 
     try{
     //Sricpt SQL
@@ -33,7 +38,7 @@ const getSelectAllMovies = async function(){
     //Encaminhe para o BD o script SQL
     let result = await prisma.$queryRawUnsafe(sql)
 
-    if(result.length > 0)
+    if(Array.isArray(result))
         return result
     else
         return false
@@ -46,7 +51,21 @@ catch (error) {
 
 //Retorna um filme filtrando pelo id do banco de dados
 const getSelectByIdMovies = async function(id){
-
+    try{
+        //Sricpt SQL
+        let sql =  `select * from tbl_filme where id= ${id}`
+    
+        //Encaminhe para o BD o script SQL
+        let result = await prisma.$queryRawUnsafe(sql)
+    
+        if(Array.isArray(result))
+            return result
+        else
+            return false
+    }
+    catch (error) {
+        return false
+    }
 }
 
 //Insere um filme no banco de dados
@@ -64,6 +83,7 @@ const setDeleteMovies = async function(id){
 
 }
 
-Module.exports = {
-    getSelectAllMovies
+module.exports = {
+    getSelectAllMovies,
+    getSelectByIdMovies
 }

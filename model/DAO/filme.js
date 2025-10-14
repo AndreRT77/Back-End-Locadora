@@ -69,8 +69,36 @@ const getSelectByIdMovies = async function(id){
 }
 
 //Insere um filme no banco de dados
-const setInsertMovies = async function(){
-
+const setInsertMovies = async function(filme){
+    try {
+        let sql = `INSERT INTO tbl_filme (
+            nome,
+            sinopse,
+            data_lancamento,
+            duracao,
+            orcamento,
+            trailer,
+            capa
+        ) VALUES
+        (
+            '${filme.nome}',
+            '${filme.sinopse}',
+            '${filme.data_lancamento}',
+            '${filme.duracao}',
+            '${filme.orcamento}',
+            '${filme.trailer}',
+            '${filme.capa}'
+        )`
+        //executeRawUnsafe() -> Executa o scipt SQL que não tem retorno de valores
+       let result = await prisma.$executeRawUnsafe(sql)
+       if(result) 
+        return true
+       else
+        return false
+    } catch (error) {
+        return false
+        
+    }
 }
 
 //Altera um filme no banco de dados

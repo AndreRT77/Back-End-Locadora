@@ -84,6 +84,16 @@ app.put('/v1/locadora/filme/:id', cors(), bodyParserJSON, async function (reques
     response.json(filme)
 })
 
+app.delete('/v1/locadora/filme/:id', cors(), async function(request, response){
+    
+    //Recebe o ID encaminhado via parametro na requisição
+    let idFilme = request.params.id
+
+    //Chama a função para listar os filmes do BD
+    let filme = await controllerfilme.excluirFilme(idFilme)
+    response.status(filme.status_code)
+    response.json(filme)
+})
 
 app.listen(PORT, function(){
     console.log('API aguardando requisições !!!')

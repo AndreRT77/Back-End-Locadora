@@ -153,7 +153,28 @@ const atualizarFilme = async function (filme, id, contentType) {
 
 //Excluir um filme buscando pelo ID
 const excluirFilme = async function (id) {
+    let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
+    try {
+        if (!isNaN(id) && id != '' && id != null && id > 0) {
+            let resultFilmes = await filmeDAO.setDeleteMovies(Number(id))
 
+            if (resultFilmes.length > 0) {
+                MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_DELETED_ITEM.status
+                MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_DELETED_ITEM.status_code
+                MESSAGES.DEFAULT_HEADER.items.filme = resultFilmes
+
+                return MESSAGES.DEFAULT_HEADER
+            } else {
+                return MESSAGES.ERROR_NOT_FOUND //404
+            }
+        } else {
+            MESSAGES.ERROR_REQUIRED_FIELDS.message += '[ID incorreto]'
+            return MESSAGES.ERROR_REQUIRED_FIELDS //400
+        }
+    
+    } catch (error) {
+    return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER //500
+}
 
 }
 //validação dos dados de cadastro e atualização do filme
@@ -196,5 +217,6 @@ module.exports = {
     listarFilmes,
     buscarFilmeID,
     inserirFilme,
-    atualizarFilme
+    atualizarFilme,
+    excluirFilme
 }

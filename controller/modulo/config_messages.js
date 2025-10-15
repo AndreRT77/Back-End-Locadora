@@ -22,6 +22,9 @@ const SUCCESS_REQUEST                    = {status: true, status_code: 200, mess
 
 const SUCCESS_CREATED_ITEM               = {status: true, status_code: 201, message: 'Item criado com sucesso!!!'}
 
+const SUCCESS_UPDATED_ITEM              = {status: true, status_code: 200, message: 'Item atualizado com sucesso!!!'}
+
+
 /**************************************MENSAGENS DE ERRO***********************************/
 const ERROR_NOT_FOUND                    ={status: false, status_code: 404, message: 'Não foram encontrados dados de retorno!!!'}
 
@@ -38,6 +41,7 @@ module.exports = {
     DEFAULT_HEADER,
     SUCCESS_REQUEST,
     SUCCESS_CREATED_ITEM,
+    SUCCESS_UPDATED_ITEM,
     ERROR_NOT_FOUND,
     ERROR_INTERNAL_SERVER_CONTROLLER,
     ERROR_INTERNAL_SERVER_MODEL,

@@ -104,16 +104,17 @@ const setInsertMovies = async function(filme){
 //Altera um filme no banco de dados
 const setUpdateMovies = async function(filme){
     try {
-        let sql = `INSERT INTO tbl_filme 
-            nome            = '${filme.nome}',
-            sinopse         = '${filme.sinopse}',
-            data_lancamento = '${filme.data_lancamento}',
-            duracao         = '${filme.duracao}'
-            orcamento       =  ${filme.orcamento},
-            trailer         = '${filme.trailer}',
-            capa            = '${filme.capa}'
-            WHERE id = ${filme.id}
+        let sql = `UPDATE tbl_filme SET
+            nome='${filme.nome}',
+            sinopse='${filme.sinopse}',
+            data_lancamento='${filme.data_lancamento}',
+            duracao='${filme.duracao}',
+            orcamento=${filme.orcamento},
+            trailer='${filme.trailer}',
+            capa='${filme.capa}'
+            WHERE id=${filme.id};
             `
+            
         //executeRawUnsafe() -> Executa o scipt SQL que não tem retorno de valores
        let result = await prisma.$executeRawUnsafe(sql)
        if(result) 
@@ -121,6 +122,7 @@ const setUpdateMovies = async function(filme){
        else
         return false
     } catch (error) {
+        
         return false
         
     }

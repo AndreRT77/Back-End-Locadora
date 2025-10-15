@@ -54,11 +54,13 @@ const buscarFilmeID = async function (id) {
                 return MESSAGES.ERROR_NOT_FOUND //404
             }
         } else {
+            MESSAGES.ERROR_REQUIRED_FIELDS.message += '[ID incorreto]'
             return MESSAGES.ERROR_REQUIRED_FIELDS //400
         }
+    
     } catch (error) {
-        return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER //500
-    }
+    return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER //500
+}
 }
 
 
@@ -69,9 +71,9 @@ const inserirFilme = async function (filme, contentType) {
         if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
             //Cgana a função de validar todos os dados de filme
             let validar = await validarDadosFilme(filme)
-            if(!validar){
+            if (!validar) {
 
-            
+
                 //Processamento
                 //Chama a função para inserir um novo filme no banco de dados
                 let resultFilmes = await filmeDAO.setInsertMovies(filme)
@@ -84,7 +86,7 @@ const inserirFilme = async function (filme, contentType) {
                 } else {
                     return MESSAGES.ERROR_INTERNAL_SERVER_MODEL //500
                 }
-            }else{
+            } else {
                 return validar //400
             }
         } else {
@@ -98,7 +100,54 @@ const inserirFilme = async function (filme, contentType) {
 }
 
 //Atualiza um filme buscando pelo ID
-const atualizarFilme = async function (filme, id) {
+const atualizarFilme = async function (filme, id, contentType) {
+    let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
+    try {
+        if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
+
+
+            //Cgana a função de validar todos os dados de filme
+            let validar = await validarDadosFilme(filme)
+            if (!validar) {
+
+                //Validação de ID válido, chama a função da controller que verifica no db se o id existe e valida o ID
+                let validarID = await buscarFilmeID(id)
+
+                if (validarID.status_code == 200) {
+
+                    filme.id = Number(id)
+                    //Validação do ID, se existe no BD 
+
+                    //Validação de ID válido
+                    //Processamento
+                    //Chama a função para inserir um novo filme no banco de dados
+                    let resultFilmes = await filmeDAO.setUpdateMovies(filme)
+                    if (resultFilmes) {
+                        MESSAGES.DEFAULT_HEADER.status      = MESSAGES.SUCCESS_UPDATED_ITEM.status
+                        MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_UPDATED_ITEM.status_code
+                        MESSAGES.DEFAULT_HEADER.message     = MESSAGES.SUCCESS_UPDATED_ITEM.message
+                        MESSAGES.DEFAULT_HEADER.items.filme  = filme
+
+                        return MESSAGES.DEFAULT_HEADER //200
+                    } else {
+                        return MESSAGES.ERROR_INTERNAL_SERVER_MODEL //500
+                    }
+                } else {
+                    return validarID //A função buscarFilmeID poderá retornar (400 ou 404 ou 500)
+                }
+            } else {
+                return validar //400 referente a validação dos dados
+
+            }
+        } else {
+            return MESSAGES.ERROR_CONTENT_TYPE //400 referente a validação do ID
+        }
+
+    } catch (error) {
+        console.log(error)
+        
+        return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER
+    }
 
 }
 
@@ -108,43 +157,44 @@ const excluirFilme = async function (id) {
 
 }
 //validação dos dados de cadastro e atualização do filme
-const validarDadosFilme = async function (filme){
-        let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
-        //Validações de todas entradas de dados
+const validarDadosFilme = async function (filme) {
+    let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
+    //Validações de todas entradas de dados
 
-        if (filme.nome == '' || filme.nome == undefined || filme.nome == null || filme.nome.length > 100) {
-            MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Nome incorreto]'
-            return MESSAGES.ERROR_REQUIRED_FIELDS
+    if (filme.nome == '' || filme.nome == undefined || filme.nome == null || filme.nome.length > 100) {
+        MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Nome incorreto]'
+        return MESSAGES.ERROR_REQUIRED_FIELDS
 
-        } else if (filme.sinopse == undefined) {
-            MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Sinopse incorreta]'
-            return MESSAGES.ERROR_REQUIRED_FIELDS
+    } else if (filme.sinopse == undefined) {
+        MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Sinopse incorreta]'
+        return MESSAGES.ERROR_REQUIRED_FIELDS
 
-        } else if (filme.data_lancamento == undefined || filme.data_lancamento.length != 10) {
-            MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Data de lançamento incorreto]'
-            return MESSAGES.ERROR_REQUIRED_FIELDS
+    } else if (filme.data_lancamento == undefined || filme.data_lancamento.length != 10) {
+        MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Data de lançamento incorreto]'
+        return MESSAGES.ERROR_REQUIRED_FIELDS
 
-        } else if (filme.duracao == '' || filme.duracao == undefined || filme.duracao == null || filme.duracao.length > 8) {
-            MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Duração incorreta]'
-            return MESSAGES.ERROR_REQUIRED_FIELDS
+    } else if (filme.duracao == '' || filme.duracao == undefined || filme.duracao == null || filme.duracao.length > 8) {
+        MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Duração incorreta]'
+        return MESSAGES.ERROR_REQUIRED_FIELDS
 
-        } else if (filme.orcamento == '' || filme.orcamento == undefined || filme.orcamento == null || filme.orcamento.length > 14 || typeof (filme.orcamento) != 'number') {
-            MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Orçamento incorreto]'
-            return MESSAGES.ERROR_REQUIRED_FIELDS
-        } else if (filme.trailer == undefined || filme.trailer.length > 200) {
-            MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Trailer incorreto]'
-            return MESSAGES.ERROR_REQUIRED_FIELDS
+    } else if (filme.orcamento == '' || filme.orcamento == undefined || filme.orcamento == null || filme.orcamento.length > 14 || typeof (filme.orcamento) != 'number') {
+        MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Orçamento incorreto]'
+        return MESSAGES.ERROR_REQUIRED_FIELDS
+    } else if (filme.trailer == undefined || filme.trailer.length > 200) {
+        MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Trailer incorreto]'
+        return MESSAGES.ERROR_REQUIRED_FIELDS
 
-        } else if (filme.capa == '' || filme.capa == undefined || filme.capa == null || filme.capa.length > 200) {
-            MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Capa incorreta]'
-            return MESSAGES.ERROR_REQUIRED_FIELDS
-        } else {
-            return false
-        }
+    } else if (filme.capa == '' || filme.capa == undefined || filme.capa == null || filme.capa.length > 200) {
+        MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Capa incorreta]'
+        return MESSAGES.ERROR_REQUIRED_FIELDS
+    } else {
+        return false
+    }
 }
 
 module.exports = {
     listarFilmes,
     buscarFilmeID,
-    inserirFilme
+    inserirFilme,
+    atualizarFilme
 }

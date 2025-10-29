@@ -1,28 +1,28 @@
 /*******************************************************************************************
- * Objetivo: Arquivo responsável pela manipulação de dados entre o APP e a model para o CRUD de cargos 
- * Data:22/10/2025
+ * Objetivo: Arquivo responsável pela manipulação de dados entre o APP e a model para o CRUD de filmes 
+ * Data:07/10/2025
  * Autor: André Roberto Tavares
  * Versão: 1.0
  *******************************************************************************************/
 
-
-const cargoDAO = require('../../model/DAO/cargos.js')
+//Import da model do DAO do filme
+const filmeDAO = require('../../model/DAO/filme.js')
 
 //Import do arquivo de mensagens
 const DEFAULT_MESSAGES = require('../modulo/config_messages.js')
 
-//Retorna uma lista de todos os cargos 
-const listarCargos = async function () {
+//Retorna uma lista de todos os filmes 
+const listarFilmes = async function () {
     //Criando um objeto novo para as mensagens 
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
     try {
-        //Chama a função do DAO para retornar a lista de cargos do BD
-        let resultCargos = await cargoDAO.getSelectAllRoles()
-        if (resultCargos) {
-            if (resultCargos.length > 0) {
+        //Chama a função do DAO para retornar a lista de filmes do BD
+        let resultFilmes = await filmeDAO.getSelectAllMovies()
+        if (resultFilmes) {
+            if (resultFilmes.length > 0) {
                 MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.items.cargos = resultCargos
+                MESSAGES.DEFAULT_HEADER.items.filmes = resultFilmes
 
                 return MESSAGES.DEFAULT_HEADER // 200
             } else {
@@ -34,21 +34,20 @@ const listarCargos = async function () {
 
 
     } catch (error) {
-        console.log(error)
-        return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER //500
+        return MESSAGES.ERROR.INTERNAL.SERVER.CONTROLLER //500
     }
 }
-//Retorna um cargo filtrando pelo ID
-const buscarCargosID = async function (id) {
+//Retorna um filme filtrando pelo ID
+const buscarFilmeID = async function (id) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
     try {
         if (!isNaN(id) && id != '' && id != null && id > 0) {
-            let resultCargos = await cargoDAO.getSelectByIdRoles(Number(id))
+            let resultFilmes = await filmeDAO.getSelectByIdMovies(Number(id))
 
-            if (resultCargos.length > 0) {
+            if (resultFilmes.length > 0) {
                 MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.items.cargos = resultCargos
+                MESSAGES.DEFAULT_HEADER.items.filme = resultFilmes
 
                 return MESSAGES.DEFAULT_HEADER
             } else {
@@ -64,34 +63,41 @@ const buscarCargosID = async function (id) {
 }
 }
 
- //Insere um cargo
-const inserirCargo = async function (cargo, contentType) {
+
+//Insere um filme
+const inserirFilme = async function (filme, contentType) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
     try {
         if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
-            //Chama a função de validar todos os dados do cargo
-            let validar = await validarDadosCargo(cargo)
+            //Cgana a função de validar todos os dados de filme
+            let validar = await validarDadosFilme(filme)
             if (!validar) {
 
-                //Processamento
-                //Chama a função para inserir um novo cargo no banco de dados
-                let resultCargos = await cargoDAO.setInsertRoles(cargo)
-                if (resultCargos) {
-                    //Chama a função para receber o ID gerado no banco de dados
-                    let lastID = await cargoDAO.getSelectLastID()
-                    if(lastID){
-                        //Adiciona o ID no JSON com os dados do cargo
-                        cargo.id = lastID
-                        MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATED_ITEM.status
-                        MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATED_ITEM.status_code
-                        MESSAGES.DEFAULT_HEADER.message = MESSAGES.SUCCESS_CREATED_ITEM.message
-                        MESSAGES.DEFAULT_HEADER.items = { cargo: cargo }
 
-                        return MESSAGES.DEFAULT_HEADER //201
+                //Processamento
+                //Chama a função para inserir um novo filme no banco de dados
+                let resultFilmes = await filmeDAO.setInsertMovies(filme)
+                if (resultFilmes) {
+                    //Chama a função para receber o ID gerado no banco de dados
+                    let lastID = await filmeDAO.getSelectLastID()
+                    if(lastID){
+                        //Adiciona o ID no JSON com os dados do filme
+                    filme.id = lastID
+                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATED_ITEM.status
+                    MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATED_ITEM.status_code
+                    MESSAGES.DEFAULT_HEADER.message = MESSAGES.SUCCESS_CREATED_ITEM.message
+                    MESSAGES.DEFAULT_HEADER.items = filme
+
+                    return MESSAGES.DEFAULT_HEADER //201
 
                     }else{
                         return MESSAGES.ERROR_INTERNAL_SERVER_MODEL
                     }
+                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATED_ITEM.status
+                    MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATED_ITEM.status_code
+                    MESSAGES.DEFAULT_HEADER.message = MESSAGES.SUCCESS_CREATED_ITEM.message
+
+                    return MESSAGES.DEFAULT_HEADER //201
                 } else {
                     return MESSAGES.ERROR_INTERNAL_SERVER_MODEL //500
                 }
@@ -102,43 +108,47 @@ const inserirCargo = async function (cargo, contentType) {
             return MESSAGES.ERROR_CONTENT_TYPE
         }
     } catch (error) {
-        console.log(error)
+
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER
     }
 
 }
 
-//Atualiza um cargo buscando pelo ID
-const atualizarCargo = async function (cargo, id, contentType) {
+//Atualiza um filme buscando pelo ID
+const atualizarFilme = async function (filme, id, contentType) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
     try {
         if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
 
-            //Chama a função de validar todos os dados do cargo
-            let validar = await validarDadosCargo(cargo)
+
+            //Cgana a função de validar todos os dados de filme
+            let validar = await validarDadosFilme(filme)
             if (!validar) {
 
                 //Validação de ID válido, chama a função da controller que verifica no db se o id existe e valida o ID
-                let validarID = await buscarCargosID(id)
+                let validarID = await buscarFilmeID(id)
 
                 if (validarID.status_code == 200) {
 
-                    cargo.id = Number(id)
+                    filme.id = Number(id)
+                    //Validação do ID, se existe no BD 
+
+                    //Validação de ID válido
                     //Processamento
-                    //Chama a função para atualizar o cargo no banco de dados
-                    let resultRoles = await cargoDAO.setUpdateRoles(cargo)
-                    if (resultRoles) {
+                    //Chama a função para inserir um novo filme no banco de dados
+                    let resultFilmes = await filmeDAO.setUpdateMovies(filme)
+                    if (resultFilmes) {
                         MESSAGES.DEFAULT_HEADER.status      = MESSAGES.SUCCESS_UPDATED_ITEM.status
                         MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_UPDATED_ITEM.status_code
                         MESSAGES.DEFAULT_HEADER.message     = MESSAGES.SUCCESS_UPDATED_ITEM.message
-                        MESSAGES.DEFAULT_HEADER.items.cargo  = resultRoles
+                        MESSAGES.DEFAULT_HEADER.items.filme  = filme
 
                         return MESSAGES.DEFAULT_HEADER //200
                     } else {
                         return MESSAGES.ERROR_INTERNAL_SERVER_MODEL //500
                     }
                 } else {
-                    return validarID //A função buscarCargosID poderá retornar (400 ou 404 ou 500)
+                    return validarID //A função buscarFilmeID poderá retornar (400 ou 404 ou 500)
                 }
             } else {
                 return validar //400 referente a validação dos dados
@@ -156,8 +166,8 @@ const atualizarCargo = async function (cargo, id, contentType) {
 
 }
 
-//Excluir um cargo buscando pelo ID
-const excluirCargo = async function (id) {
+//Excluir um filme buscando pelo ID
+const excluirFilme = async function (id) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
@@ -166,18 +176,18 @@ const excluirCargo = async function (id) {
         if(!isNaN(id) && id != '' && id != null && id > 0){
 
             //Validação de ID válido, chama a função da controller que verifica no BD se o ID existe e valida o ID
-            let validarID = await buscarCargosID(id)
+            let validarID = await buscarFilmeID(id)
 
             if(validarID.status_code == 200){
 
-                let resultCargos = await cargoDAO.setDeleteRoles(Number(id))
+                let resultFilmes = await filmeDAO.setDeleteMovies(Number(id))
 
-                if(resultCargos){
+                if(resultFilmes){
                     
                         MESSAGES.DEFAULT_HEADER.status      = MESSAGES.SUCCESS_DELETED_ITEM.status
                         MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_DELETED_ITEM.status_code
                         MESSAGES.DEFAULT_HEADER.message     = MESSAGES.SUCCESS_DELETED_ITEM.message
-                        MESSAGES.DEFAULT_HEADER.items.cargos = resultCargos
+                        MESSAGES.DEFAULT_HEADER.items.filme = resultFilmes
                         delete MESSAGES.DEFAULT_HEADER.items
                         return MESSAGES.DEFAULT_HEADER //200
             
@@ -198,26 +208,46 @@ const excluirCargo = async function (id) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER //500
     }
 }
-//validação dos dados de cadastro e atualização do cargo
-const validarDadosCargo = async function (cargo) {
+//validação dos dados de cadastro e atualização do filme
+const validarDadosFilme = async function (filme) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
     //Validações de todas entradas de dados
 
-    if (cargo.nome == '' || cargo.nome == undefined || cargo.nome == null || cargo.nome.length > 100) {
+    if (filme.nome == '' || filme.nome == undefined || filme.nome == null || filme.nome.length > 100) {
         MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Nome incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
-    }else if (cargo.descricao == undefined) {
-            MESSAGES.ERROR_REQUIRED_FIELDS.message += '[descricao incorreta]'
-            return MESSAGES.ERROR_REQUIRED_FIELDS
+
+    } else if (filme.sinopse == undefined) {
+        MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Sinopse incorreta]'
+        return MESSAGES.ERROR_REQUIRED_FIELDS
+
+    } else if (filme.data_lancamento == undefined || filme.data_lancamento.length != 10) {
+        MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Data de lançamento incorreto]'
+        return MESSAGES.ERROR_REQUIRED_FIELDS
+
+    } else if (filme.duracao == '' || filme.duracao == undefined || filme.duracao == null || filme.duracao.length > 8) {
+        MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Duração incorreta]'
+        return MESSAGES.ERROR_REQUIRED_FIELDS
+
+    } else if (filme.orcamento == '' || filme.orcamento == undefined || filme.orcamento == null || filme.orcamento.length > 14 || typeof (filme.orcamento) != 'number') {
+        MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Orçamento incorreto]'
+        return MESSAGES.ERROR_REQUIRED_FIELDS
+    } else if (filme.trailer == undefined || filme.trailer.length > 200) {
+        MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Trailer incorreto]'
+        return MESSAGES.ERROR_REQUIRED_FIELDS
+
+    } else if (filme.capa == '' || filme.capa == undefined || filme.capa == null || filme.capa.length > 200) {
+        MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Capa incorreta]'
+        return MESSAGES.ERROR_REQUIRED_FIELDS
     } else {
         return false
     }
 }
 
 module.exports = {
-    listarCargos,
-    buscarCargosID,
-    inserirCargo,
-    atualizarCargo,
-    excluirCargo
+    listarFilmes,
+    buscarFilmeID,
+    inserirFilme,
+    atualizarFilme,
+    excluirFilme
 }

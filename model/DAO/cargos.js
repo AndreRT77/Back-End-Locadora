@@ -11,11 +11,11 @@ const {PrismaClient} = require('../../generated/prisma')
 const prisma = new PrismaClient()
 
 //Retorna uma lista de todos os filmes do banco de dados
-const getSelectAllGenres = async() =>{
+const getSelectAllRoles = async() =>{
 
     try{
     //Sricpt SQL
-    let sql =  'select * from tbl_genero order by id desc'
+    let sql =  'select * from tbl_cargo order by cargo_id desc'
 
     //Encaminhe para o BD o script SQL
     let result = await prisma.$queryRawUnsafe(sql)
@@ -26,16 +26,17 @@ const getSelectAllGenres = async() =>{
         return false
 }
 catch (error) {
+    console.log(error)
     return false
 }
 
 }
 
 //Retorna um filme filtrando pelo id do banco de dados
-const getSelectByIdGenres = async function(id){
+const getSelectByIdRoles = async function(id){
     try{
         //Sricpt SQL
-        let sql =  `select * from tbl_genero where id= ${id}`
+        let sql =  `select * from tbl_cargo where cargo_id= ${id}`
     
         //Encaminhe para o BD o script SQL
         let result = await prisma.$queryRawUnsafe(sql)
@@ -53,7 +54,7 @@ const getSelectByIdGenres = async function(id){
 const getSelectLastID = async function(){
     try {
         //Script SQL para retornar apenas o último ID do BD
-        let sql = `select id from tbl_genero order by id desc limit 1`
+        let sql = `select id from tbl_cargo order by cargo_id desc limit 1`
         let result = await prisma.$queryRawUnsafe(sql)
     
         if(Array.isArray(result))
@@ -66,13 +67,15 @@ const getSelectLastID = async function(){
 }
 
 //Insere um filme no banco de dados
-const setInsertGenres = async function(genero){
+const setInsertRoles = async function(cargo){
     try {
-        let sql = `INSERT INTO tbl_genero (
-            nome
+        let sql = `INSERT INTO tbl_cargo (
+            nome,
+            descricao
         ) VALUES
         (
-            '${genero.nome}'
+            '${cargo.nome}',
+            '${cargo.descricao}'
         )`
         //executeRawUnsafe() -> Executa o scipt SQL que não tem retorno de valores
        let result = await prisma.$executeRawUnsafe(sql)
@@ -89,11 +92,12 @@ const setInsertGenres = async function(genero){
 }
 
 //Altera um filme no banco de dados
-const setUpdateGenres = async function(genero){
+const setUpdateRoles = async function(cargo){
     try {
-        let sql = `UPDATE tbl_genero SET
-            nome='${genero.nome}'
-            WHERE id=${genero.id};
+        let sql = `UPDATE tbl_cargo SET
+            nome='${cargo.nome}',
+            descricao='${cargo.descricao}'
+            WHERE cargo_id=${cargo.id};
             `
             
         //executeRawUnsafe() -> Executa o scipt SQL que não tem retorno de valores
@@ -110,10 +114,10 @@ const setUpdateGenres = async function(genero){
 }
 
 //Exclui um filme pelo ID no banco de dados
-const setDeleteGenres = async function(id){
+const setDeleteRoles = async function(id){
     try {
         //Script SQL
-        let sql = `delete from tbl_genero where id=${id}`
+        let sql = `delete from tbl_cargo where cargo_id=${id}`
         
         //Encaminha para o BD o srcipt SQL
         let result = await prisma.$queryRawUnsafe(sql)
@@ -131,10 +135,10 @@ const setDeleteGenres = async function(id){
 }
 
 module.exports = {
-    getSelectAllGenres,
-    getSelectByIdGenres,
-    getSelectLastID,
-    setInsertGenres,
-    setUpdateGenres,
-    setDeleteGenres
+ getSelectAllRoles,
+ getSelectByIdRoles,
+ getSelectLastID,
+ setInsertRoles,
+ setUpdateRoles,
+ setDeleteRoles
 }

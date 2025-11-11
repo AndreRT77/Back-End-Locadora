@@ -44,6 +44,8 @@ const getSelectAllMovies = async() =>{
         return false
 }
 catch (error) {
+    console.log(error)
+
     return false
 }
 
@@ -64,6 +66,8 @@ const getSelectByIdMovies = async function(id){
             return false
     }
     catch (error) {
+        console.log(error)
+
         return false
     }
 }
@@ -79,6 +83,8 @@ const getSelectLastID = async function(){
         else
             return false
     } catch (error) {
+        console.log(error)
+
         return false
     }
 }
@@ -111,6 +117,8 @@ const setInsertMovies = async function(filme){
        else
         return false
     } catch (error) {
+        console.log(error)
+
         return false
         
     }
@@ -137,7 +145,8 @@ const setUpdateMovies = async function(filme){
        else
         return false
     } catch (error) {
-        
+        console.log(error)
+
         return false
         
     }
@@ -159,7 +168,7 @@ const setDeleteMovies = async function(id){
             return false
 
     } catch (error) {
-        //console.log(error)
+        console.log(error)
         return false
     }
 }

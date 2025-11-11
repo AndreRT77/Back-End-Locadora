@@ -39,6 +39,7 @@ const ERROR_REQUIRED_FIELDS              ={status: false, status_code: 400, mess
 
 const ERROR_CONTENT_TYPE                 ={status: false, status_code: 415, message: 'Não foi possível processar a requisição, pois o tipo de dados enviado no corpo deve ser JSON'}
 
+const ERROR_RELATION_INSERT              ={status: false, status_code: 500,message: 'A inserção do item principal foi processada com sucesso, porém houveram problemas ao inserir dados na tabela de relação'}
 
 module.exports = {
     DEFAULT_HEADER,

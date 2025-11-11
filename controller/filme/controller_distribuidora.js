@@ -6,23 +6,23 @@
  *******************************************************************************************/
 
 //Import da model do DAO do filme
-const filmeDAO = require('../../model/DAO/filme.js')
+const distribuidoraDAO = require('../../model/DAO/distribuidora.js')
 
 //Import do arquivo de mensagens
 const DEFAULT_MESSAGES = require('../modulo/config_messages.js')
 
-//Retorna uma lista de todos os filmes 
-const listarFilmes = async function () {
+//Retorna uma lista de todos os distribuidora 
+const listarDistribuidoras = async function () {
     //Criando um objeto novo para as mensagens 
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
     try {
         //Chama a função do DAO para retornar a lista de filmes do BD
-        let resultFilmes = await filmeDAO.getSelectAllMovies()
-        if (resultFilmes) {
-            if (resultFilmes.length > 0) {
+        let resultDistribuidoras = await distribuidoraDAO.getSelectAllDistributors()
+        if (resultDistribuidoras) {
+            if (resultDistribuidoras.length > 0) {
                 MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.items.filmes = resultFilmes
+                MESSAGES.DEFAULT_HEADER.items.distribuidoras = resultDistribuidoras
 
                 return MESSAGES.DEFAULT_HEADER // 200
             } else {
@@ -38,16 +38,16 @@ const listarFilmes = async function () {
     }
 }
 //Retorna um filme filtrando pelo ID
-const buscarFilmeID = async function (id) {
+const buscarDistribuidoraID = async function (id) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
     try {
         if (!isNaN(id) && id != '' && id != null && id > 0) {
-            let resultFilmes = await filmeDAO.getSelectByIdMovies(Number(id))
+            let resultDistribuidoras = await distribuidoraDAO.getSelectByIdDistributors(Number(id))
 
-            if (resultFilmes.length > 0) {
+            if (resultDistribuidoras.length > 0) {
                 MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.items.filme = resultFilmes
+                MESSAGES.DEFAULT_HEADER.items.distribuidora = resultDistribuidoras
 
                 return MESSAGES.DEFAULT_HEADER
             } else {
@@ -65,28 +65,28 @@ const buscarFilmeID = async function (id) {
 
 
 //Insere um filme
-const inserirFilme = async function (filme, contentType) {
+const inserirDistribuidora = async function (distribuidora, contentType) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
     try {
         if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
-            //Cgana a função de validar todos os dados de filme
-            let validar = await validarDadosFilme(filme)
+            //Cgana a função de validar todos os dados de distribuidora
+            let validar = await validarDadosDistribuidora(distribuidora)
             if (!validar) {
 
 
                 //Processamento
-                //Chama a função para inserir um novo filme no banco de dados
-                let resultFilmes = await filmeDAO.setInsertMovies(filme)
-                if (resultFilmes) {
+                //Chama a função para inserir um novo distribuidora no banco de dados
+                let resultDistribuidoras = await distribuidoraDAO.setInsertDistributors(distribuidora)
+                if (resultDistribuidoras) {
                     //Chama a função para receber o ID gerado no banco de dados
-                    let lastID = await filmeDAO.getSelectLastID()
+                    let lastID = await distribuidoraDAO.getSelectLastID()
                     if(lastID){
-                        //Adiciona o ID no JSON com os dados do filme
-                    filme.id = lastID
+                        //Adiciona o ID no JSON com os dados do distribuidora
+                    distribuidora.id = lastID
                     MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATED_ITEM.status
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATED_ITEM.status_code
                     MESSAGES.DEFAULT_HEADER.message = MESSAGES.SUCCESS_CREATED_ITEM.message
-                    MESSAGES.DEFAULT_HEADER.items = filme
+                    MESSAGES.DEFAULT_HEADER.items = distribuidora
 
                     return MESSAGES.DEFAULT_HEADER //201
 
@@ -114,41 +114,41 @@ const inserirFilme = async function (filme, contentType) {
 
 }
 
-//Atualiza um filme buscando pelo ID
-const atualizarFilme = async function (filme, id, contentType) {
+//Atualiza um distribuidora buscando pelo ID
+const atualizarDistribuidora = async function (distribuidora, id, contentType) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
     try {
         if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
 
 
-            //Cgana a função de validar todos os dados de filme
-            let validar = await validarDadosFilme(filme)
+            //Cgana a função de validar todos os dados de distribuidora
+            let validar = await validarDadosDistribuidora(distribuidora)
             if (!validar) {
 
                 //Validação de ID válido, chama a função da controller que verifica no db se o id existe e valida o ID
-                let validarID = await buscarFilmeID(id)
+                let validarID = await buscarDistribuidoraID(id)
 
                 if (validarID.status_code == 200) {
 
-                    filme.id = Number(id)
+                    distribuidora.id = Number(id)
                     //Validação do ID, se existe no BD 
 
                     //Validação de ID válido
                     //Processamento
-                    //Chama a função para inserir um novo filme no banco de dados
-                    let resultFilmes = await filmeDAO.setUpdateMovies(filme)
-                    if (resultFilmes) {
+                    //Chama a função para inserir um novo distribuidora no banco de dados
+                    let resultDistribuidoras = await distribuidoraDAO.setUpdateDistributors(distribuidora)
+                    if (resultDistribuidoras) {
                         MESSAGES.DEFAULT_HEADER.status      = MESSAGES.SUCCESS_UPDATED_ITEM.status
                         MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_UPDATED_ITEM.status_code
                         MESSAGES.DEFAULT_HEADER.message     = MESSAGES.SUCCESS_UPDATED_ITEM.message
-                        MESSAGES.DEFAULT_HEADER.items.filme  = filme
+                        MESSAGES.DEFAULT_HEADER.items.distribuidora  = distribuidora
 
                         return MESSAGES.DEFAULT_HEADER //200
                     } else {
                         return MESSAGES.ERROR_INTERNAL_SERVER_MODEL //500
                     }
                 } else {
-                    return validarID //A função buscarFilmeID poderá retornar (400 ou 404 ou 500)
+                    return validarID //A função buscardistribuidoraID poderá retornar (400 ou 404 ou 500)
                 }
             } else {
                 return validar //400 referente a validação dos dados
@@ -167,7 +167,7 @@ const atualizarFilme = async function (filme, id, contentType) {
 }
 
 //Excluir um filme buscando pelo ID
-const excluirFilme = async function (id) {
+const excluirDistribuidora = async function (id) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
@@ -176,18 +176,18 @@ const excluirFilme = async function (id) {
         if(!isNaN(id) && id != '' && id != null && id > 0){
 
             //Validação de ID válido, chama a função da controller que verifica no BD se o ID existe e valida o ID
-            let validarID = await buscarFilmeID(id)
+            let validarID = await buscarDistribuidoraID(id)
 
             if(validarID.status_code == 200){
 
-                let resultFilmes = await filmeDAO.setDeleteMovies(Number(id))
+                let resultDistribuidoras = await distribuidoraDAO.setDeleteDistributors(Number(id))
 
-                if(resultFilmes){
+                if(resultDistribuidoras){
                     
                         MESSAGES.DEFAULT_HEADER.status      = MESSAGES.SUCCESS_DELETED_ITEM.status
                         MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_DELETED_ITEM.status_code
                         MESSAGES.DEFAULT_HEADER.message     = MESSAGES.SUCCESS_DELETED_ITEM.message
-                        MESSAGES.DEFAULT_HEADER.items.filme = resultFilmes
+                        MESSAGES.DEFAULT_HEADER.items.distribuidora = resultDistribuidoras
                         delete MESSAGES.DEFAULT_HEADER.items
                         return MESSAGES.DEFAULT_HEADER //200
             
@@ -208,46 +208,28 @@ const excluirFilme = async function (id) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER //500
     }
 }
-//validação dos dados de cadastro e atualização do filme
-const validarDadosFilme = async function (filme) {
+//validação dos dados de cadastro e atualização do distribuidora
+const validarDadosDistribuidora = async function (distribuidora) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
     //Validações de todas entradas de dados
 
-    if (filme.nome == '' || filme.nome == undefined || filme.nome == null || filme.nome.length > 100) {
+    if (distribuidora.nome == '' || distribuidora.nome == undefined || distribuidora.nome == null || distribuidora.nome.length > 100) {
         MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Nome incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    } else if (filme.sinopse == undefined) {
-        MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Sinopse incorreta]'
+    } else if (distribuidora.site == '' || distribuidora.site == undefined || distribuidora.site == null || distribuidora.site.length > 200) {
+        MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Site incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    } else if (filme.data_lancamento == undefined || filme.data_lancamento.length != 10) {
-        MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Data de lançamento incorreto]'
-        return MESSAGES.ERROR_REQUIRED_FIELDS
-
-    } else if (filme.duracao == '' || filme.duracao == undefined || filme.duracao == null || filme.duracao.length > 8) {
-        MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Duração incorreta]'
-        return MESSAGES.ERROR_REQUIRED_FIELDS
-
-    } else if (filme.orcamento == '' || filme.orcamento == undefined || filme.orcamento == null || filme.orcamento.length > 14 || typeof (filme.orcamento) != 'number') {
-        MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Orçamento incorreto]'
-        return MESSAGES.ERROR_REQUIRED_FIELDS
-    } else if (filme.trailer == undefined || filme.trailer.length > 200) {
-        MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Trailer incorreto]'
-        return MESSAGES.ERROR_REQUIRED_FIELDS
-
-    } else if (filme.capa == '' || filme.capa == undefined || filme.capa == null || filme.capa.length > 200) {
-        MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Capa incorreta]'
-        return MESSAGES.ERROR_REQUIRED_FIELDS
     } else {
         return false
     }
 }
 
 module.exports = {
-    listarFilmes,
-    buscarFilmeID,
-    inserirFilme,
-    atualizarFilme,
-    excluirFilme
+    listarDistribuidoras,
+    buscarDistribuidoraID,
+    inserirDistribuidora,
+    atualizarDistribuidora,
+    excluirDistribuidora
 }

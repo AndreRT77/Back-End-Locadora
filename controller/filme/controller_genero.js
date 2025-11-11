@@ -59,6 +59,7 @@ const buscarGenerosID = async function (id) {
         }
     
     } catch (error) {
+        console.log(error)
     return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER //500
 }
 }

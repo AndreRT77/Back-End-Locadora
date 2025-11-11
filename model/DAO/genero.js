@@ -26,6 +26,8 @@ const getSelectAllGenres = async() =>{
         return false
 }
 catch (error) {
+    console.log(error)
+
     return false
 }
 
@@ -46,6 +48,8 @@ const getSelectByIdGenres = async function(id){
             return false
     }
     catch (error) {
+        console.log(error)
+
         return false
     }
 }
@@ -61,6 +65,8 @@ const getSelectLastID = async function(){
         else
             return false
     } catch (error) {
+        console.log(error)
+
         return false
     }
 }
@@ -103,7 +109,8 @@ const setUpdateGenres = async function(genero){
        else
         return false
     } catch (error) {
-        
+        console.log(error)
+
         return false
         
     }
@@ -125,7 +132,7 @@ const setDeleteGenres = async function(id){
             return false
 
     } catch (error) {
-        //console.log(error)
+        console.log(error)
         return false
     }
 }

@@ -7,6 +7,8 @@
 
 //Import da model do DAO do filme
 const filmeDAO = require('../../model/DAO/filme.js')
+const controllerFilmeGenero = require('./controller_filme_genero.js')
+const controllerGenero = require('./controller_genero.js')
 
 //Import do arquivo de mensagens
 const DEFAULT_MESSAGES = require('../modulo/config_messages.js')
@@ -34,6 +36,8 @@ const listarFilmes = async function () {
 
 
     } catch (error) {
+        console.log(error)
+
         return MESSAGES.ERROR.INTERNAL.SERVER.CONTROLLER //500
     }
 }
@@ -59,6 +63,8 @@ const buscarFilmeID = async function (id) {
         }
     
     } catch (error) {
+        console.log(error)
+
     return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER //500
 }
 }
@@ -83,17 +89,42 @@ const inserirFilme = async function (filme, contentType) {
                     if(lastID){
                         //Adiciona o ID no JSON com os dados do filme
                     filme.id = lastID
+                        for(genero of filme.genero){
+                     // Processar a inserção dos dados na tabela de relação entre Filme e Genero
+                    //  filme.genero.forEach(async (genero) => {
+                        let filmeGenero = { 
+                            id_filme: lastID, 
+                            id_genero: genero.id
+                        }
+                        let resultFilmesGenero = await controllerFilmeGenero.inserirFilmeGenero(filmeGenero,contentType)
+                        if (resultFilmesGenero.status_code != 201)
+                            return MESSAGES.ERROR.ERROR_RELATION_INSERT
+                    }
+                    
+                    
+                    filme.id = lastID
                     MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATED_ITEM.status
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATED_ITEM.status_code
                     MESSAGES.DEFAULT_HEADER.message = MESSAGES.SUCCESS_CREATED_ITEM.message
+
+                    delete filme.genero
+
+                    //Pesquisa no BD todos os gêmeros que foram associados ao filme
+                    let resultDadosGenero = await controllerFilmeGenero.listarFilmesIdGenero(lastID)
+
+                    //Cria novamente o atributo genero e coloca o resultado do BD com os gêneros
+                    filme.genero = resultDadosGenero
+
                     MESSAGES.DEFAULT_HEADER.items = filme
+
+                   
 
                     return MESSAGES.DEFAULT_HEADER //201
 
                     }else{
                         return MESSAGES.ERROR_INTERNAL_SERVER_MODEL
                     }
-                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATED_ITEM.status
+                    MESSAGES.DEFAULT_SEADER.status = MESSAGES.SUCCESS_CREATED_ITEM.status
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATED_ITEM.status_code
                     MESSAGES.DEFAULT_HEADER.message = MESSAGES.SUCCESS_CREATED_ITEM.message
 
@@ -108,7 +139,7 @@ const inserirFilme = async function (filme, contentType) {
             return MESSAGES.ERROR_CONTENT_TYPE
         }
     } catch (error) {
-
+        console.log(error)
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER
     }
 

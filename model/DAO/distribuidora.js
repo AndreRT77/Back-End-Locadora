@@ -29,16 +29,16 @@ const {PrismaClient} = require('../../generated/prisma')
 const prisma = new PrismaClient()
 
 //Retorna uma lista de todos os filmes do banco de dados
-const getSelectAllMovies = async() =>{
+const getSelectAllDistributors = async() =>{
 
     try{
     //Sricpt SQL
-    let sql =  'select * from tbl_filme order by id desc'
+    let sql =  'select * from tbl_distribuidora order by id desc'
 
     //Encaminhe para o BD o script SQL
     let result = await prisma.$queryRawUnsafe(sql)
-
     if(Array.isArray(result))
+        
         return result
     else
         return false
@@ -50,10 +50,10 @@ catch (error) {
 }
 
 //Retorna um filme filtrando pelo id do banco de dados
-const getSelectByIdMovies = async function(id){
+const getSelectByIdDistributors = async function(id){
     try{
         //Sricpt SQL
-        let sql =  `select * from tbl_filme where id= ${id}`
+        let sql =  `select * from tbl_distribuidora where id= ${id}`
     
         //Encaminhe para o BD o script SQL
         let result = await prisma.$queryRawUnsafe(sql)
@@ -64,6 +64,7 @@ const getSelectByIdMovies = async function(id){
             return false
     }
     catch (error) {
+        console.log(error)
         return false
     }
 }
@@ -71,7 +72,7 @@ const getSelectByIdMovies = async function(id){
 const getSelectLastID = async function(){
     try {
         //Script SQL para retornar apenas o último ID do BD
-        let sql = `select id from tbl_filme order by id desc limit 1`
+        let sql = `select id from tbl_distribuidora order by id desc limit 1`
         let result = await prisma.$queryRawUnsafe(sql)
     
         if(Array.isArray(result))
@@ -84,25 +85,15 @@ const getSelectLastID = async function(){
 }
 
 //Insere um filme no banco de dados
-const setInsertMovies = async function(filme){
+const setInsertDistributors = async function(distribuidora){
     try {
-        let sql = `INSERT INTO tbl_filme (
+        let sql = `INSERT INTO tbl_distribuidora (
             nome,
-            sinopse,
-            data_lancamento,
-            duracao,
-            orcamento,
-            trailer,
-            capa
+            site
         ) VALUES
         (
-            '${filme.nome}',
-            '${filme.sinopse}',
-            '${filme.data_lancamento}',
-            '${filme.duracao}',
-            ${filme.orcamento},
-            '${filme.trailer}',
-            '${filme.capa}'
+            '${distribuidora.nome}',
+            '${distribuidora.site}'
         )`
         //executeRawUnsafe() -> Executa o scipt SQL que não tem retorno de valores
        let result = await prisma.$executeRawUnsafe(sql)
@@ -111,23 +102,19 @@ const setInsertMovies = async function(filme){
        else
         return false
     } catch (error) {
+        console.log(error)
         return false
         
     }
 }
 
 //Altera um filme no banco de dados
-const setUpdateMovies = async function(filme){
+const setUpdateDistributors = async function(distribuidora){
     try {
-        let sql = `UPDATE tbl_filme SET
-            nome='${filme.nome}',
-            sinopse='${filme.sinopse}',
-            data_lancamento='${filme.data_lancamento}',
-            duracao='${filme.duracao}',
-            orcamento=${filme.orcamento},
-            trailer='${filme.trailer}',
-            capa='${filme.capa}'
-            WHERE id=${filme.id};
+        let sql = `UPDATE tbl_distribuidora SET
+            nome='${distribuidora.nome}',
+            site='${distribuidora.site}'
+            WHERE id=${distribuidora.id};
             `
             
         //executeRawUnsafe() -> Executa o scipt SQL que não tem retorno de valores
@@ -144,10 +131,10 @@ const setUpdateMovies = async function(filme){
 }
 
 //Exclui um filme pelo ID no banco de dados
-const setDeleteMovies = async function(id){
+const setDeleteDistributors = async function(id){
     try {
         //Script SQL
-        let sql = `delete from tbl_filme where id=${id}`
+        let sql = `delete from tbl_distribuidora where id=${id}`
         
         //Encaminha para o BD o srcipt SQL
         let result = await prisma.$queryRawUnsafe(sql)
@@ -165,10 +152,10 @@ const setDeleteMovies = async function(id){
 }
 
 module.exports = {
-    getSelectAllMovies,
-    getSelectByIdMovies,
+    getSelectAllDistributors,
+    getSelectByIdDistributors,
     getSelectLastID,
-    setInsertMovies,
-    setUpdateMovies,
-    setDeleteMovies
+    setInsertDistributors,
+    setUpdateDistributors,
+    setDeleteDistributors
 }

@@ -15,34 +15,34 @@ const bodyParserJSON = bodyParser.json()
 
 
 
-const controller_cargos = require('../controller/filme/controller_cargos.js')
+const controller_distribuidora = require('../controller/filme/controller_distribuidora.js')
 
 const router = express.Router()
 
-//Endpointss para a rota de gênero
-router.get('/v1/locadora/cargos', cors(), async function(request, response){
+//Endpointss para a rota de distribuidora
+router.get('/v1/locadora/distribuidora', cors(), async function(request, response){
     
     
-    //Chama a função para listar os cargos do BD
-    let cargo = await controller_cargos.listarCargos()
-    response.status(cargo.status_code).json(cargo)
-    console.log(cargo)
+    //Chama a função para listar os distribuidoras do BD
+    let distribuidora = await controller_distribuidora.listarDistribuidoras()
+    response.status(distribuidora.status_code).json(distribuidora)
+    console.log(distribuidora)
 
 })
 //Retorna o filme filtrando por I.D
-router.get('/v1/locadora/cargos/:id', cors(), async function(request, response){
+router.get('/v1/locadora/distribuidora/:id', cors(), async function(request, response){
     
     //Recebe o ID encaminhado via parametro na requisição
-    let idCargo = request.params.id
+    let idDistribuidora= request.params.id
 
     //Chama a função para listar os filmes do BD
-    let cargo = await controller_cargos.buscarCargosID(idCargo)
-    response.status(cargo.status_code).json(cargo)
-    console.log(cargo)
+    let distribuidora = await controller_distribuidora.buscarDistribuidoraID(idDistribuidora)
+    response.status(distribuidora.status_code).json(distribuidora)
+    console.log(distribuidora)
 
 })
 //Insere um novo filme
-router.post('/v1/locadora/cargos',cors(), bodyParserJSON, async function (request,response){
+router.post('/v1/locadora/distribuidora',cors(), bodyParserJSON, async function (request,response){
     //Recebe os dados do body de requisição (Se você utilizar o bodyParser, é obrigatório ter no endPoint)
     let dadosBody = request.body
 
@@ -50,15 +50,15 @@ router.post('/v1/locadora/cargos',cors(), bodyParserJSON, async function (reques
     let contentType = request.headers['content-type']
 
     //Chama a função de econtroller para inserir o novo filme, encaminha os daados e o content-type
-    let cargo = await controller_cargos.inserirCargo(dadosBody, contentType)
+    let distribuidora = await controller_distribuidora.inserirDistribuidora(dadosBody, contentType)
 
-    response.status(cargo.status_code)
-    response.json(cargo)
+    response.status(distribuidora.status_code)
+    response.json(distribuidora)
 })
 //Atualiza um filme existente
-router.put('/v1/locadora/cargos/:id', cors(), bodyParserJSON, async function (request, response){
+router.put('/v1/locadora/distribuidora/:id', cors(), bodyParserJSON, async function (request, response){
     //Recebe o id do filme
-    let idCargo = request.params.id
+    let idDistribuidora = request.params.id
 
     //Recbe os dados a serem atualizados
     let dadosBody = request.body
@@ -67,20 +67,20 @@ router.put('/v1/locadora/cargos/:id', cors(), bodyParserJSON, async function (re
     let contentType = request.headers['content-type']
     
     //Chama a função para atualizar o filme e encaminha osdados, o id e o content type
-    let cargo = await controller_cargos.atualizarCargo(dadosBody, idCargo, contentType)
-    response.status (cargo.status_code)
-    response.json(cargo)
+    let distribuidora = await controller_distribuidora.atualizarDistribuidora(dadosBody, idDistribuidora, contentType)
+    response.status (distribuidora.status_code)
+    response.json(distribuidora)
 })
 
-router.delete('/v1/locadora/cargos/:id', cors(), async function(request, response){
+router.delete('/v1/locadora/distribuidora/:id', cors(), async function(request, response){
     
     //Recebe o ID encaminhado via parametro na requisição
-    let idCargo = request.params.id
+    let idDistribuidora = request.params.id
 
     //Chama a função para listar os filmes do BD
-    let cargo = await controller_cargos.excluirCargo(idCargo)
-    response.status(cargo.status_code)
-    response.json(cargo)
+    let distribuidora = await controller_distribuidora.excluirDistribuidora(idDistribuidora)
+    response.status(distribuidora.status_code)
+    response.json(distribuidora)
 })
 /*******************************************************************************************/
 

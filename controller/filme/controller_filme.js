@@ -8,7 +8,6 @@
 //Import da model do DAO do filme
 const filmeDAO = require('../../model/DAO/filme.js')
 const controllerFilmeGenero = require('./controller_filme_genero.js')
-const controllerGenero = require('./controller_genero.js')
 
 //Import do arquivo de mensagens
 const DEFAULT_MESSAGES = require('../modulo/config_messages.js')
@@ -22,6 +21,14 @@ const listarFilmes = async function () {
         let resultFilmes = await filmeDAO.getSelectAllMovies()
         if (resultFilmes) {
             if (resultFilmes.length > 0) {
+
+                //Processamento para adicionar os gêneros aos filmes 
+                for (filme of resultFilmes){
+                    let resultGeneros = await controllerFilmeGenero.listarFilmesIdGenero(filme.id)
+                    if(resultGeneros.status_code == 200)
+                    filme.genero = resultGeneros.items.filmeGenero
+
+                }
                 MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
                 MESSAGES.DEFAULT_HEADER.items.filmes = resultFilmes
@@ -111,6 +118,7 @@ const inserirFilme = async function (filme, contentType) {
 
                     //Pesquisa no BD todos os gêmeros que foram associados ao filme
                     let resultDadosGenero = await controllerFilmeGenero.listarFilmesIdGenero(lastID)
+
 
                     //Cria novamente o atributo genero e coloca o resultado do BD com os gêneros
                     filme.genero = resultDadosGenero

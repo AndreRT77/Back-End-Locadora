@@ -1,27 +1,28 @@
 /*******************************************************************************************
- * Objetivo: Arquivo responsável pela manipulação de dados entre o APP e a model para o CRUD de gêneros 
+ * Objetivo: Arquivo responsável pela manipulação de dados entre o APP e a model para o CRUD de classficacaos 
  * Data:22/10/2025
  * Autor: André Roberto Tavares
  * Versão: 1.0
  *******************************************************************************************/
 
-const generoDAO = require('../../model/DAO/genero.js')
+
+const classificacaoDAO = require('../../model/DAO/classificacao.js')
 
 //Import do arquivo de mensagens
 const DEFAULT_MESSAGES = require('../modulo/config_messages.js')
 
-//Retorna uma lista de todos os filmes 
-const listarGeneros = async function () {
+//Retorna uma lista de todos os classficacões 
+const listarClassificacoes = async function () {
     //Criando um objeto novo para as mensagens 
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
     try {
-        //Chama a função do DAO para retornar a lista de filmes do BD
-        let resultGeneros = await generoDAO.getSelectAllGenres()
-        if (resultGeneros) {
-            if (resultGeneros.length > 0) {
+        //Chama a função do DAO para retornar a lista de classficacões do BD
+        let resultClassificacoes = await classificacaoDAO.getSelectAllClassification()
+        if (resultClassificacoes) {
+            if (resultClassificacoes.length > 0) {
                 MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.items.generos = resultGeneros
+                MESSAGES.DEFAULT_HEADER.items.classificacoes = resultClassificacoes
 
                 return MESSAGES.DEFAULT_HEADER // 200
             } else {
@@ -37,17 +38,17 @@ const listarGeneros = async function () {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER //500
     }
 }
-//Retorna um filme filtrando pelo ID
-const buscarGenerosID = async function (id) {
+//Retorna um classficacao filtrando pelo ID
+const buscarClassificacoesID = async function (id) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
     try {
         if (!isNaN(id) && id != '' && id != null && id > 0) {
-            let resultGeneros = await generoDAO.getSelectByIdGenres(Number(id))
+            let resultClassificacoes = await classificacaoDAO.getSelectByIdClassification(Number(id))
 
-            if (resultGeneros.length > 0) {
+            if (resultClassificacoes.length > 0) {
                 MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.items.genero = resultGeneros
+                MESSAGES.DEFAULT_HEADER.items.classificacoes = resultClassificacoes
 
                 return MESSAGES.DEFAULT_HEADER
             } else {
@@ -59,46 +60,38 @@ const buscarGenerosID = async function (id) {
         }
     
     } catch (error) {
-        console.log(error)
     return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER //500
 }
 }
 
-
-//Insere um filme
-const inserirGenero = async function (genero, contentType) {
+ //Insere um classficacao
+const inserirClassificacao = async function (classificacao, contentType) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
     try {
         if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
-            //Cgana a função de validar todos os dados de filme
-            let validar = await validarDadosGenero(genero)
+            //Chama a função de validar todos os dados do classficacao
+            let validar = await validarDadosClassificacao(classificacao)
             if (!validar) {
 
-
                 //Processamento
-                //Chama a função para inserir um novo filme no banco de dados
-                let resultGeneros = await generoDAO.setInsertGenres(genero)
-                if (resultGeneros) {
+                //Chama a função para inserir um novo classficacao no banco de dados
+                let resultClassificacoes = await classificacaoDAO.setInsertClassification(classificacao)
+                if (resultClassificacoes) {
                     //Chama a função para receber o ID gerado no banco de dados
-                    let lastID = await generoDAO.getSelectLastID()
+                    let lastID = await classificacaoDAO.getSelectLastID()
                     if(lastID){
-                        //Adiciona o ID no JSON com os dados do filme
-                        genero.id = lastID
-                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATED_ITEM.status
-                    MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATED_ITEM.status_code
-                    MESSAGES.DEFAULT_HEADER.message = MESSAGES.SUCCESS_CREATED_ITEM.message
-                    MESSAGES.DEFAULT_HEADER.items = result
+                        //Adiciona o ID no JSON com os dados do classficacao
+                        classificacao.id = lastID
+                        MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATED_ITEM.status
+                        MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATED_ITEM.status_code
+                        MESSAGES.DEFAULT_HEADER.message = MESSAGES.SUCCESS_CREATED_ITEM.message
+                        MESSAGES.DEFAULT_HEADER.items = { classificacao: classificacao }
 
-                    return MESSAGES.DEFAULT_HEADER //201
+                        return MESSAGES.DEFAULT_HEADER //201
 
                     }else{
                         return MESSAGES.ERROR_INTERNAL_SERVER_MODEL
                     }
-                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATED_ITEM.status
-                    MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATED_ITEM.status_code
-                    MESSAGES.DEFAULT_HEADER.message = MESSAGES.SUCCESS_CREATED_ITEM.message
-
-                    return MESSAGES.DEFAULT_HEADER //201
                 } else {
                     return MESSAGES.ERROR_INTERNAL_SERVER_MODEL //500
                 }
@@ -115,41 +108,37 @@ const inserirGenero = async function (genero, contentType) {
 
 }
 
-//Atualiza um filme buscando pelo ID
-const atualizarGenero = async function (genero, id, contentType) {
+//Atualiza um classficacao buscando pelo ID
+const atualizarClassificacao = async function (classificacao, id, contentType) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
     try {
         if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
 
-
-            //Cgana a função de validar todos os dados de filme
-            let validar = await validarDadosGenero(genero)
+            //Chama a função de validar todos os dados do classficacao
+            let validar = await validarDadosClassificacao(classificacao)
             if (!validar) {
 
                 //Validação de ID válido, chama a função da controller que verifica no db se o id existe e valida o ID
-                let validarID = await buscarGenerosID(id)
+                let validarID = await buscarClassificacoesID(id)
 
                 if (validarID.status_code == 200) {
 
-                    genero.id = Number(id)
-                    //Validação do ID, se existe no BD 
-
-                    //Validação de ID válido
+                    classificacao.id = Number(id)
                     //Processamento
-                    //Chama a função para inserir um novo filme no banco de dados
-                    let resultGeneros = await generoDAO.setUpdateGenres(genero)
-                    if (resultGeneros) {
+                    //Chama a função para atualizar o classficacao no banco de dados
+                    let resultClassificacoes = await classificacaoDAO.setUpdateClassification(classificacao)
+                    if (resultClassificacoes) {
                         MESSAGES.DEFAULT_HEADER.status      = MESSAGES.SUCCESS_UPDATED_ITEM.status
                         MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_UPDATED_ITEM.status_code
                         MESSAGES.DEFAULT_HEADER.message     = MESSAGES.SUCCESS_UPDATED_ITEM.message
-                        MESSAGES.DEFAULT_HEADER.items.genero  = resultGeneros
+                        MESSAGES.DEFAULT_HEADER.items.classificacao  = resultClassificacoes
 
                         return MESSAGES.DEFAULT_HEADER //200
                     } else {
                         return MESSAGES.ERROR_INTERNAL_SERVER_MODEL //500
                     }
                 } else {
-                    return validarID //A função buscarFilmeID poderá retornar (400 ou 404 ou 500)
+                    return validarID //A função buscarCargosID poderá retornar (400 ou 404 ou 500)
                 }
             } else {
                 return validar //400 referente a validação dos dados
@@ -167,8 +156,8 @@ const atualizarGenero = async function (genero, id, contentType) {
 
 }
 
-//Excluir um filme buscando pelo ID
-const excluirGenero = async function (id) {
+//Excluir um classficacao buscando pelo ID
+const excluirClassificacao = async function (id) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
@@ -177,18 +166,18 @@ const excluirGenero = async function (id) {
         if(!isNaN(id) && id != '' && id != null && id > 0){
 
             //Validação de ID válido, chama a função da controller que verifica no BD se o ID existe e valida o ID
-            let validarID = await buscarGenerosID(id)
+            let validarID = await buscarClassificacoesID(id)
 
             if(validarID.status_code == 200){
 
-                let resultGeneros = await generoDAO.setDeleteGenres(Number(id))
+                let resultClassificacoes = await classificacaoDAO.setDeleteClassification(Number(id))
 
-                if(resultGeneros){
+                if(resultClassificacoes){
                     
                         MESSAGES.DEFAULT_HEADER.status      = MESSAGES.SUCCESS_DELETED_ITEM.status
                         MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_DELETED_ITEM.status_code
                         MESSAGES.DEFAULT_HEADER.message     = MESSAGES.SUCCESS_DELETED_ITEM.message
-                        MESSAGES.DEFAULT_HEADER.items.generos = resultGeneros
+                        MESSAGES.DEFAULT_HEADER.items.classificacoes = resultClassificacoes
                         delete MESSAGES.DEFAULT_HEADER.items
                         return MESSAGES.DEFAULT_HEADER //200
             
@@ -209,25 +198,26 @@ const excluirGenero = async function (id) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER //500
     }
 }
-//validação dos dados de cadastro e atualização do filme
-const validarDadosGenero = async function (Genero) {
+//validação dos dados de cadastro e atualização do classficacao
+const validarDadosClassificacao = async function (classificacao) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
     //Validações de todas entradas de dados
 
-    if (Genero.nome == '' || Genero.nome == undefined || Genero.nome == null || Genero.nome.length > 100) {
+    if (classificacao.nivel == '' || classificacao.nivel == undefined || classificacao.nivel == null || classificacao.nivel.length > 100) {
         MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Nome incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
-
-   
+    }else if (classificacao.descricao == undefined) {
+            MESSAGES.ERROR_REQUIRED_FIELDS.message += '[descricao incorreta]'
+            return MESSAGES.ERROR_REQUIRED_FIELDS
     } else {
         return false
     }
 }
 
 module.exports = {
-    listarGeneros,
-    buscarGenerosID,
-    inserirGenero,
-    atualizarGenero,
-    excluirGenero
+    listarClassificacoes,
+    buscarClassificacoesID,
+    inserirClassificacao,
+    atualizarClassificacao,
+    excluirClassificacao
 }

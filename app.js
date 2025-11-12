@@ -32,12 +32,14 @@ const route_genero = require('./routes/route_genero.js')
 const route_cargo = require('./routes/route_cargo.js')
 const route_profissional = require ('./routes/routes_profissional.js')
 const route_distribuidora = require ('./routes/route_distribuidora.js')
+const route_classificacao = require ('./routes/route_classificacao.js')
 
 app.use(route_filme)
 app.use(route_genero)
 app.use(route_cargo)
 app.use(route_profissional)
 app.use(route_distribuidora)
+app.use(route_classificacao)
 
 app.listen(PORT, function(){
     console.log('API aguardando requisições !!!')

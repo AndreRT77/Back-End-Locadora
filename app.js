@@ -34,6 +34,9 @@ const route_profissional = require ('./routes/routes_profissional.js')
 const route_distribuidora = require ('./routes/route_distribuidora.js')
 const route_classificacao = require ('./routes/route_classificacao.js')
 const route_filme_genero = require ('./routes/route_filme_genero.js')
+const route_personagens = require ('./routes/route_personagens.js')
+const route_ator = require ('./routes/route_ator.js')
+const route_personagem_filme = require ('./routes/route_personagem_filme.js')
 
 
 app.use(route_filme)
@@ -43,6 +46,9 @@ app.use(route_profissional)
 app.use(route_distribuidora)
 app.use(route_classificacao)
 app.use(route_filme_genero)
+app.use(route_personagens)
+app.use(route_ator)
+app.use(route_personagem_filme)
 
 app.listen(PORT, function(){
     console.log('API aguardando requisições !!!')

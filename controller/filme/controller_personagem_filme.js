@@ -1,28 +1,28 @@
 /*******************************************************************************************
- * Objetivo: Arquivo responsável pela manipulação de dados entre o APP e a model para o CRUD de personagens
+ * Objetivo: Arquivo responsável pela manipulação de dados entre o APP e a model para o CRUD da tabela intermediária personagem_filme
  * Data: 16/12/2025
  * Autor: André Roberto Tavares
  * Versão: 1.0
  *******************************************************************************************/
 
-//Import da model do DAO do personagem
-const personagemDAO = require('../../model/DAO/personagem.js')
+//Import da model do DAO
+const personagemFilmeDAO = require('../../model/DAO/personagem_filme.js')
 
 //Import do arquivo de mensagens
 const DEFAULT_MESSAGES = require('../modulo/config_messages.js')
 
-//Retorna uma lista de todos os personagens
-const listarPersonagens = async function () {
+//Retorna uma lista de todos os registros
+const listarPersonagemFilme = async function () {
     //Criando um objeto novo para as mensagens 
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
     try {
-        //Chama a função do DAO para retornar a lista de personagens do BD
-        let resultPersonagens = await personagemDAO.getSelectAllPersonagens()
-        if (resultPersonagens) {
-            if (resultPersonagens.length > 0) {
+        //Chama a função do DAO
+        let result = await personagemFilmeDAO.getSelectAllPersonagemFilme()
+        if (result) {
+            if (result.length > 0) {
                 MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.items.personagens = resultPersonagens
+                MESSAGES.DEFAULT_HEADER.items = result
 
                 return MESSAGES.DEFAULT_HEADER // 200
             } else {
@@ -36,17 +36,17 @@ const listarPersonagens = async function () {
     }
 }
 
-//Retorna um personagem filtrando pelo ID
-const buscarPersonagemID = async function (id) {
+//Retorna um registro filtrando pelo ID
+const buscarPersonagemFilmeID = async function (id) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
     try {
         if (!isNaN(id) && id != '' && id != null && id > 0) {
-            let resultPersonagens = await personagemDAO.getSelectByIdPersonagem(Number(id))
+            let result = await personagemFilmeDAO.getSelectByIdPersonagemFilme(Number(id))
 
-            if (resultPersonagens.length > 0) {
+            if (result.length > 0) {
                 MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.items.personagens = resultPersonagens
+                MESSAGES.DEFAULT_HEADER.items = result
 
                 return MESSAGES.DEFAULT_HEADER
             } else {
@@ -62,27 +62,26 @@ const buscarPersonagemID = async function (id) {
     }
 }
 
-//Insere um personagem
-const inserirPersonagem = async function (personagem, contentType) {
+//Insere um novo relacionamento
+const inserirPersonagemFilme = async function (dados, contentType) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
     try {
         if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
-            //Chama a função de validar todos os dados de personagem
-            let validar = await validarDadosPersonagem(personagem)
+            //Chama a função de validar todos os dados
+            let validar = await validarDados(dados)
             if (!validar) {
                 //Processamento
-                //Chama a função para inserir um novo personagem no banco de dados
-                let resultPersonagens = await personagemDAO.setInsertPersonagem(personagem)
-                if (resultPersonagens) {
+                let result = await personagemFilmeDAO.setInsertPersonagemFilme(dados)
+                if (result) {
                     //Chama a função para receber o ID gerado no banco de dados
-                    let lastID = await personagemDAO.getSelectLastID()
+                    let lastID = await personagemFilmeDAO.getSelectLastID()
                     if(lastID){
-                        //Adiciona o ID no JSON com os dados do personagem
-                        personagem.id = lastID
+                        //Adiciona o ID no JSON
+                        dados.id = lastID
                         MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATED_ITEM.status
                         MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATED_ITEM.status_code
                         MESSAGES.DEFAULT_HEADER.message = MESSAGES.SUCCESS_CREATED_ITEM.message
-                        MESSAGES.DEFAULT_HEADER.items = personagem
+                        MESSAGES.DEFAULT_HEADER.items = dados
 
                         return MESSAGES.DEFAULT_HEADER //201
                     } else {
@@ -102,34 +101,34 @@ const inserirPersonagem = async function (personagem, contentType) {
     }
 }
 
-//Atualiza um personagem buscando pelo ID
-const atualizarPersonagem = async function (personagem, id, contentType) {
+//Atualiza um registro buscando pelo ID
+const atualizarPersonagemFilme = async function (dados, id, contentType) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
     try {
         if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
-            //Chama a função de validar todos os dados de personagem
-            let validar = await validarDadosPersonagem(personagem)
+            //Chama a função de validar todos os dados
+            let validar = await validarDados(dados)
             if (!validar) {
-                //Validação de ID válido, chama a função da controller que verifica no db se o id existe e valida o ID
-                let validarID = await buscarPersonagemID(id)
+                //Validação de ID válido
+                let validarID = await buscarPersonagemFilmeID(id)
 
                 if (validarID.status_code == 200) {
-                    personagem.id = Number(id)
+                    dados.id = Number(id)
                     
-                    //Chama a função para atualizar o personagem no banco de dados
-                    let resultPersonagens = await personagemDAO.setUpdatePersonagem(personagem)
-                    if (resultPersonagens) {
+                    //Chama a função para atualizar no BD
+                    let result = await personagemFilmeDAO.setUpdatePersonagemFilme(dados)
+                    if (result) {
                         MESSAGES.DEFAULT_HEADER.status      = MESSAGES.SUCCESS_UPDATED_ITEM.status
                         MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_UPDATED_ITEM.status_code
                         MESSAGES.DEFAULT_HEADER.message     = MESSAGES.SUCCESS_UPDATED_ITEM.message
-                        MESSAGES.DEFAULT_HEADER.items.personagens = personagem
+                        MESSAGES.DEFAULT_HEADER.items = dados
 
                         return MESSAGES.DEFAULT_HEADER //200
                     } else {
                         return MESSAGES.ERROR_INTERNAL_SERVER_MODEL //500
                     }
                 } else {
-                    return validarID //A função buscarPersonagemID poderá retornar (400 ou 404 ou 500)
+                    return validarID //400, 404 ou 500
                 }
             } else {
                 return validar //400 referente a validação dos dados
@@ -143,19 +142,19 @@ const atualizarPersonagem = async function (personagem, id, contentType) {
     }
 }
 
-//Excluir um personagem buscando pelo ID
-const excluirPersonagem = async function (id) {
+//Excluir um registro buscando pelo ID
+const excluirPersonagemFilme = async function (id) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
     try {
         //Validação da chegada do ID
         if(!isNaN(id) && id != '' && id != null && id > 0){
             //Validação de ID válido
-            let validarID = await buscarPersonagemID(id)
+            let validarID = await buscarPersonagemFilmeID(id)
 
             if(validarID.status_code == 200){
-                let resultPersonagens = await personagemDAO.setDeletePersonagem(Number(id))
+                let result = await personagemFilmeDAO.setDeletePersonagemFilme(Number(id))
 
-                if(resultPersonagens){
+                if(result){
                     MESSAGES.DEFAULT_HEADER.status      = MESSAGES.SUCCESS_DELETED_ITEM.status
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_DELETED_ITEM.status_code
                     MESSAGES.DEFAULT_HEADER.message     = MESSAGES.SUCCESS_DELETED_ITEM.message
@@ -177,17 +176,17 @@ const excluirPersonagem = async function (id) {
     }
 }
 
-//validação dos dados de cadastro e atualização do personagem
-const validarDadosPersonagem = async function (personagem) {
+//validação dos dados
+const validarDados = async function (dados) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
-    //Validações de todas entradas de dados
-
-    if (personagem.nome == '' || personagem.nome == undefined || personagem.nome == null || personagem.nome.length > 255) {
-        MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Nome incorreto]'
+    
+    //Valida se os IDs estrangeiros são números válidos
+    if (dados.filme_id == '' || dados.filme_id == undefined || isNaN(dados.filme_id)) {
+        MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Filme ID incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    } else if (personagem.descricao == undefined || personagem.descricao == null) {
-        MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Descrição incorreta]'
+    } else if (dados.personagem_id == '' || dados.personagem_id == undefined || isNaN(dados.personagem_id)) {
+        MESSAGES.ERROR_REQUIRED_FIELDS.message += '[Personagem ID incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
     
     } else {
@@ -196,9 +195,9 @@ const validarDadosPersonagem = async function (personagem) {
 }
 
 module.exports = {
-    listarPersonagens,
-    buscarPersonagemID,
-    inserirPersonagem,
-    atualizarPersonagem,
-    excluirPersonagem
+    listarPersonagemFilme,
+    buscarPersonagemFilmeID,
+    inserirPersonagemFilme,
+    atualizarPersonagemFilme,
+    excluirPersonagemFilme
 }

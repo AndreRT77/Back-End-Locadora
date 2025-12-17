@@ -1,141 +1,766 @@
 openapi: 3.0.3
 info:
-  title: Projeto do SENAI Jandira - Professor Marcel
-  description: |-
-   API destinada a controle de alunos
+  title: Projeto Locadora de Filmes
+  description: API destinada ao controle de uma locadora de filmes (Filmes, Atores, Gêneros, etc).
   termsOfService: http://swagger.io/terms/
   contact:
-    email: seunome@email.com
+    email: suporte@locadora.com
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   version: 1.0.0
 externalDocs:
-  description: Find out more about Swagger
+  description: Saiba mais sobre o Swagger
   url: http://swagger.io
 servers:
-  - url: http://
+  - url: http://localhost:8080/v1/locadora
 paths:
-  /v1/aluno:
-    post:
-      tags:
-        - aluno
-      summary: Adiciona um novo Aluno
-      description: Adiciona um novo Aluno
-      requestBody:
-        description: JSON contendo os dados do anovo aluno a ser inserido no sistema
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Aluno'
-        required: true
-      responses:
-        '201':
-          description: Successful operation
-        '400':
-          description: Invalid input
+  # --- GENERO ---
+  /genero:
     get:
-      tags:
-        - aluno
-      summary: Lista todos os alunos
-      description: Listagem de todos os alunos registrados no sistema
+      tags: [Genero]
+      summary: Lista todos os gêneros
       responses:
         '200':
-          description: successful operation
+          description: Sucesso
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Aluno'          
-           
-        '404':
-          description: Not Found
-  /v1/aluno/{id}:
-    get:
-      tags:
-        - aluno
-      summary: Busca um aluno prlo ID
-      description: Retorna um aluno pelo ID
-      parameters:
-        - name: id
-          in: path
-          description: ID of pet to return
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Aluno'          
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Pet not found
-    put:
-      tags:
-        - aluno
-      summary: Update an existing pet
-      description: Update an existing pet by Id
-      parameters:
-        - name: id
-          in: path
-          description: ID of pet to return
-          required: true
-          schema:
-            type: integer
-            format: int64
+                  $ref: '#/components/schemas/Genero'
+    post:
+      tags: [Genero]
+      summary: Cria um novo gênero
       requestBody:
-        description: Update an existent pet in the store
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Aluno'
-        required: true
+              $ref: '#/components/schemas/Genero'
       responses:
-        '200':
-          description: Successful operation
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Pet not found
-       
-    delete:
-      tags:
-        - aluno
-      summary: Delete aluno
-      description: Excluir um aluno
+        '201':
+          description: Criado com sucesso
+  /genero/{id}:
+    get:
+      tags: [Genero]
+      summary: Busca gênero por ID
       parameters:
-        - name: id
-          in: path
-          description: ID of pet to return
-          required: true
-          schema:
-            type: integer
-            format: int64
+        - $ref: '#/components/parameters/idParam'
       responses:
         '200':
-          description: successful operation
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Pet not found
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Genero'
+    put:
+      tags: [Genero]
+      summary: Atualiza gênero
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Genero'
+      responses:
+        '200':
+          description: Atualizado com sucesso
+    delete:
+      tags: [Genero]
+      summary: Deleta gênero
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Deletado com sucesso
+
+  # --- CARGOS ---
+  /cargos:
+    get:
+      tags: [Cargos]
+      summary: Lista todos os cargos
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Cargo'
+    post:
+      tags: [Cargos]
+      summary: Cria um novo cargo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cargo'
+      responses:
+        '201':
+          description: Criado com sucesso
+  /cargos/{id}:
+    get:
+      tags: [Cargos]
+      summary: Busca cargo por ID
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cargo'
+    put:
+      tags: [Cargos]
+      summary: Atualiza cargo
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cargo'
+      responses:
+        '200':
+          description: Atualizado com sucesso
+    delete:
+      tags: [Cargos]
+      summary: Deleta cargo
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Deletado com sucesso
+
+  # --- FILMES ---
+  /filme:
+    get:
+      tags: [Filmes]
+      summary: Lista todos os filmes
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Filme'
+    post:
+      tags: [Filmes]
+      summary: Cria um novo filme
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Filme'
+      responses:
+        '201':
+          description: Criado com sucesso
+  /filme/{id}:
+    get:
+      tags: [Filmes]
+      summary: Busca filme por ID
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Filme'
+    put:
+      tags: [Filmes]
+      summary: Atualiza filme
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Filme'
+      responses:
+        '200':
+          description: Atualizado com sucesso
+    delete:
+      tags: [Filmes]
+      summary: Deleta filme
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Deletado com sucesso
+
+  # --- PROFISSIONAL ---
+  /profissional:
+    get:
+      tags: [Profissional]
+      summary: Lista profissionais
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Profissional'
+    post:
+      tags: [Profissional]
+      summary: Cria um novo profissional
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Profissional'
+      responses:
+        '201':
+          description: Criado com sucesso
+  /profissional/{id}:
+    get:
+      tags: [Profissional]
+      summary: Busca profissional por ID
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profissional'
+    put:
+      tags: [Profissional]
+      summary: Atualiza profissional
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Profissional'
+      responses:
+        '200':
+          description: Atualizado com sucesso
+    delete:
+      tags: [Profissional]
+      summary: Deleta profissional
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Deletado com sucesso
+
+  # --- DISTRIBUIDORA ---
+  /distribuidora:
+    get:
+      tags: [Distribuidora]
+      summary: Lista distribuidoras
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Distribuidora'
+    post:
+      tags: [Distribuidora]
+      summary: Cria uma nova distribuidora
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Distribuidora'
+      responses:
+        '201':
+          description: Criado com sucesso
+  /distribuidora/{id}:
+    get:
+      tags: [Distribuidora]
+      summary: Busca distribuidora por ID
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Distribuidora'
+    put:
+      tags: [Distribuidora]
+      summary: Atualiza distribuidora
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Distribuidora'
+      responses:
+        '200':
+          description: Atualizado com sucesso
+    delete:
+      tags: [Distribuidora]
+      summary: Deleta distribuidora
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Deletado com sucesso
+
+  # --- FILME_GENERO (Associação) ---
+  /filme_genero:
+    get:
+      tags: [filme_genero]
+      summary: Lista relação filmes-gêneros
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FilmeGenero'
+    post:
+      tags: [filme_genero]
+      summary: Associa um gênero a um filme
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FilmeGenero'
+      responses:
+        '201':
+          description: Criado com sucesso
+  /filme_genero/{id}:
+    get:
+      tags: [filme_genero]
+      summary: Busca associação por ID
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilmeGenero'
+    put:
+      tags: [filme_genero]
+      summary: Atualiza associação
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FilmeGenero'
+      responses:
+        '200':
+          description: Atualizado com sucesso
+    delete:
+      tags: [filme_genero]
+      summary: Deleta associação
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Deletado com sucesso
+
+  # --- CLASSIFICACAO ---
+  /classificacao:
+    get:
+      tags: [Classificacao]
+      summary: Lista classificações
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Classificacao'
+    post:
+      tags: [Classificacao]
+      summary: Cria nova classificação
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Classificacao'
+      responses:
+        '201':
+          description: Criado com sucesso
+  /classificacao/{id}:
+    get:
+      tags: [Classificacao]
+      summary: Busca classificação por ID
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Classificacao'
+    put:
+      tags: [Classificacao]
+      summary: Atualiza classificação
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Classificacao'
+      responses:
+        '200':
+          description: Atualizado com sucesso
+    delete:
+      tags: [Classificacao]
+      summary: Deleta classificação
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Deletado com sucesso
+
+  # --- PERSONAGENS ---
+  /personagem:
+    get:
+      tags: [Personagens]
+      summary: Lista personagens
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Personagem'
+    post:
+      tags: [Personagens]
+      summary: Cria novo personagem
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Personagem'
+      responses:
+        '201':
+          description: Criado com sucesso
+  /personagem/{id}:
+    get:
+      tags: [Personagens]
+      summary: Busca personagem por ID
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Personagem'
+    put:
+      tags: [Personagens]
+      summary: Atualiza personagem
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Personagem'
+      responses:
+        '200':
+          description: Atualizado com sucesso
+    delete:
+      tags: [Personagens]
+      summary: Deleta personagem
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Deletado com sucesso
+
+  # --- ATOR ---
+  /ator:
+    get:
+      tags: [Ator]
+      summary: Lista atores
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ator'
+    post:
+      tags: [Ator]
+      summary: Cadastra ator
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ator'
+      responses:
+        '201':
+          description: Criado com sucesso
+  /ator/{id}:
+    get:
+      tags: [Ator]
+      summary: Busca ator por ID
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ator'
+    put:
+      tags: [Ator]
+      summary: Atualiza ator
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ator'
+      responses:
+        '200':
+          description: Atualizado com sucesso
+    delete:
+      tags: [Ator]
+      summary: Deleta ator
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Deletado com sucesso
+
+  # --- PERSONAGEM_FILME ---
+  /personagem_filme:
+    get:
+      tags: [Personagem_filme]
+      summary: Lista relação personagem-filme
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PersonagemFilme'
+    post:
+      tags: [Personagem_filme]
+      summary: Cria relação personagem-filme
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonagemFilme'
+      responses:
+        '201':
+          description: Criado com sucesso
+  /personagem_filme/{id}:
+    get:
+      tags: [Personagem_filme]
+      summary: Busca relação por ID
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonagemFilme'
+    put:
+      tags: [Personagem_filme]
+      summary: Atualiza relação
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonagemFilme'
+      responses:
+        '200':
+          description: Atualizado com sucesso
+    delete:
+      tags: [Personagem_filme]
+      summary: Deleta relação
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Deletado com sucesso
+
 components:
+  parameters:
+    idParam:
+      name: id
+      in: path
+      description: ID numérico do registro
+      required: true
+      schema:
+        type: integer
+        format: int64
+
   schemas:
-    Aluno:
-      required:
-        - nome
+    Genero:
       type: object
       properties:
         id:
           type: integer
         nome:
           type: string
-        celular:
+          example: "Corrida"
+
+    Cargo:
+      type: object
+      properties:
+        id:
+          type: integer
+        nome:
           type: string
-        email:
+          example: "Ilustrador"
+        descricao:
           type: string
+          example: "Responsável por ilustrações"
+
+    Filme:
+      type: object
+      properties:
+        id:
+          type: integer
+        nome:
+          type: string
+          example: "Frankenstein"
+        sinopse:
+          type: string
+          example: "O Dr. Victor Frankenstein..."
+        data_lancamento:
+          type: string
+          format: date
+          example: "2025-10-17"
+        duracao:
+          type: string
+          example: "02:29:00"
+        orcamento:
+          type: number
+          format: double
+          example: 120000000.00
+        trailer:
+          type: string
+        capa:
+          type: string
+        genero:
+          type: array
+          description: Lista de IDs de gêneros
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+
+    Profissional:
+      type: object
+      properties:
+        id:
+          type: integer
+        nome:
+          type: string
+          example: "Andrei Tarkovski"
+        nacionalidade:
+          type: string
+          example: "Russia"
+        biografia:
+          type: string
+
+    Distribuidora:
+      type: object
+      properties:
+        id:
+          type: integer
+        nome:
+          type: string
+          example: "A24 Films"
+        site:
+          type: string
+          example: "https://a24films.com"
+
+    FilmeGenero:
+      type: object
+      description: Tabela associativa
+      properties:
+        id:
+          type: integer
+        id_filme:
+          type: integer
+        id_genero:
+          type: integer
+
+    Classificacao:
+      type: object
+      properties:
+        id:
+          type: integer
+        nivel:
+          type: string
+          example: "18"
+        descricao:
+          type: string
+          example: "Violência"
+
+    Personagem:
+      type: object
+      properties:
+        id:
+          type: integer
+        nome:
+          type: string
+          example: "Hulk"
+        descricao:
+          type: string
+          example: "Cientista Bruce Banner..."
+
+    Ator:
+      type: object
+      properties:
+        id:
+          type: integer
+        profissional_id:
+          type: integer
+        personagem_id:
+          type: integer
+
+    PersonagemFilme:
+      type: object
+      description: Associação entre Personagem e Filme
+      properties:
+        id:
+          type: integer
+        personagem_id:
+          type: integer
+        filme_id:
+          type: integer

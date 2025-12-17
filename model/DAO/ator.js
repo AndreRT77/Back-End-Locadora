@@ -1,20 +1,21 @@
 /*******************************************************************************************
- * Objetivo: Arquivo responsável pelo CRUD de dados no MySQL referente ao personagem
- * Data: 16/10/2025
+ * Objetivo: Arquivo responsável pelo CRUD de dados no MySQL referente a tabela de relacionamento Ator (Profissional <-> Personagem)
+ * Data: 07/10/2025
  * Autor: André Roberto Tavares
  * Versão: 1.0
  *******************************************************************************************/
 
-//Import da dependencua do Prisma que permite a execução de script sql no banco de dados
-const { PrismaClient } = require('../../generated/prisma')
+//Import da dependencia do Prisma que permite a execução de script sql no banco de dados
+const {PrismaClient} = require('../../generated/prisma')
+
 //Cria uma novo objeto baseado na classe do PrismaClient
 const prisma = new PrismaClient()
 
-//Retorna uma lista de todos os personagens do banco de dados
-const getSelectAllPersonagens = async function() {
+//Retorna uma lista de todos os registros da tabela ator
+const getSelectAllAtores = async function() {
     try {
         //Sricpt SQL
-        let sql = 'select * from tbl_personagem order by personagem_id desc'
+        let sql = 'select * from tbl_ator order by id desc'
 
         //Encaminhe para o BD o script SQL
         let result = await prisma.$queryRawUnsafe(sql)
@@ -29,11 +30,11 @@ const getSelectAllPersonagens = async function() {
     }
 }
 
-//Retorna um personagem filtrando pelo id do banco de dados
-const getSelectByIdPersonagem = async function(id) {
+//Retorna um registro filtrando pelo id
+const getSelectByIdAtor = async function(id) {
     try {
         //Sricpt SQL
-        let sql = `select * from tbl_personagem where personagem_id = ${id}`
+        let sql = `select * from tbl_ator where id = ${id}`
 
         //Encaminhe para o BD o script SQL
         let result = await prisma.$queryRawUnsafe(sql)
@@ -52,11 +53,11 @@ const getSelectByIdPersonagem = async function(id) {
 const getSelectLastID = async function() {
     try {
         //Script SQL para retornar apenas o último ID do BD
-        let sql = `select personagem_id from tbl_personagem order by personagem_id desc limit 1`
+        let sql = `select id from tbl_ator order by id desc limit 1`
         let result = await prisma.$queryRawUnsafe(sql)
 
         if (Array.isArray(result))
-            return Number(result[0].personagem_id)
+            return Number(result[0].id)
         else
             return false
     } catch (error) {
@@ -65,15 +66,15 @@ const getSelectLastID = async function() {
     }
 }
 
-//Insere um personagem no banco de dados
-const setInsertPersonagem = async function(personagem) {
+//Insere um novo relacionamento ator
+const setInsertAtor = async function(ator) {
     try {
-        let sql = `INSERT INTO tbl_personagem (
-            nome,
-            descricao
+        let sql = `INSERT INTO tbl_ator (
+            profissional_id,
+            personagem_id
         ) VALUES (
-            '${personagem.nome}',
-            '${personagem.descricao}'
+            ${ator.profissional_id},
+            ${ator.personagem_id}
         )`
 
         //executeRawUnsafe() -> Executa o scipt SQL que não tem retorno de valores
@@ -89,13 +90,13 @@ const setInsertPersonagem = async function(personagem) {
     }
 }
 
-//Altera um personagem no banco de dados
-const setUpdatePersonagem = async function(personagem) {
+//Altera um relacionamento ator existente
+const setUpdateAtor = async function(ator) {
     try {
-        let sql = `UPDATE tbl_personagem SET
-            nome = '${personagem.nome}',
-            descricao = '${personagem.descricao}'
-            WHERE personagem_id = ${personagem.id}`
+        let sql = `UPDATE tbl_ator SET
+            profissional_id = ${ator.profissional_id},
+            personagem_id = ${ator.personagem_id}
+            WHERE id = ${ator.id}`
 
         //executeRawUnsafe() -> Executa o scipt SQL que não tem retorno de valores
         let result = await prisma.$executeRawUnsafe(sql)
@@ -110,19 +111,17 @@ const setUpdatePersonagem = async function(personagem) {
     }
 }
 
-//Exclui um personagem pelo ID no banco de dados
-const setDeletePersonagem = async function(id) {
+//Exclui um relacionamento pelo ID
+const setDeleteAtor = async function(id) {
     try {
         //Script SQL
-        let sql = `delete from tbl_personagem where personagem_id = ${id}`
+        let sql = `delete from tbl_ator where id = ${id}`
 
         //Encaminha para o BD o srcipt SQL
-        let result = await prisma.$queryRawUnsafe(sql) // O Prisma retorna info sobre delete no queryRaw em alguns drivers, mas executeRaw é mais comum. Mantive queryRawUnsafe conforme seu modelo.
+        let result = await prisma.$queryRawUnsafe(sql)
 
-        //Nota: O delete geralmente não retorna array de dados como select, mas no seu modelo original estava assim.
-        //Para manter a fidelidade, mantive a lógica, mas o ideal seria verificar o count de linhas afetadas.
         if (result) 
-            return true // Adaptado pois delete sem retorno de linhas pode não ser array
+            return true
         else
             return false
 
@@ -133,10 +132,10 @@ const setDeletePersonagem = async function(id) {
 }
 
 module.exports = {
-    getSelectAllPersonagens,
-    getSelectByIdPersonagem,
+    getSelectAllAtores,
+    getSelectByIdAtor,
     getSelectLastID,
-    setInsertPersonagem,
-    setUpdatePersonagem,
-    setDeletePersonagem
+    setInsertAtor,
+    setUpdateAtor,
+    setDeleteAtor
 }
